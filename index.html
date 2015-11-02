@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen">
+		<link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Coming+Soon' rel='stylesheet' type='text/css'>
+
+		<title>mathsheets.js | A math exercise sheet generator.</title>
+        <meta name="description" content="Math exercise sheet generator.">
+
+        <script src="js/jquery-2.1.1.min.js"></script>
+        <script src="js/jspdf.min.js"></script>
+        <script src="js/draw_canvas.js"></script>
+        <script>
+            $(document).ready(function(){
+                generateProblems();
+            });
+        </script>
+    </head>
+
+    <body>
+        <table>
+            <tr>
+                <h1>mathsheets.js</h1>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td valign="top">
+                                <div id="controlPanel" style="margin-right: 300px">
+                                    <p>
+                                        Max:
+                                        <select name="selectMax" id="selectMax" onchange="writePage()">
+                                            <option value="10" selected="selected">10</option>
+                                            <option value="20">20</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </p>
+                                    <p>
+                                        Mode:<br/>
+                                        <select name="selectMode" id="selectMode" onchange='writePage()'>
+                                            <option value="default" selected="selected">Default</option>
+                                            <option value="doubles">Doubles</option>
+                                            <option value="making10s">Making 10's</option>
+                                            <option value="1more1less">One more, one less</option>
+                                            <option value="2more2less">Two more, two less</option>
+                                        </select>
+                                    </p>
+
+                                    <p>
+                                        Subtraction: <input name="checkSubtract" id="checkSubtract" type="checkbox">
+                                    </p>
+                                    <p>
+                                        Rows:
+                                        <select name="selectRows" id="selectRows" onchange="writePage()">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5" selected="selected">5</option>
+                                        </select>
+                                    </p>
+                                    <p>
+                                        Columns:
+                                        <select name="selectCols" id="selectCols" onchange="writePage()">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5" selected="selected">5</option>
+                                        </select>
+                                    </p>
+                                    <p>
+                                        <input value="Refresh" type="button">
+                                        <input value="Print" type="button">
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="container" style="margin-left: -300px; width=500px">
+                                <canvas id='canvas' style="position: absolute; left: 300; top: 55; z-index: 0;">
+                                    HTML5 Canvas not supported by this browser.
+                                </canvas>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

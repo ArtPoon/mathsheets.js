@@ -2,36 +2,62 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen">
-		<link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
-        <link href='https://fonts.googleapis.com/css?family=Coming+Soon' rel='stylesheet' type='text/css'>
 
 		<title>mathsheets.js | A math exercise sheet generator.</title>
         <meta name="description" content="Math exercise sheet generator.">
 
+        <style>
+            #preloadfont {
+                font-family: ComingSoon, sans-serif;
+                font-size: 48px;
+            }
+			#canvas {}
+			.container {
+                border:2px solid #aaa;
+				width: 850px;
+				height: 600px;
+				overflow-x: scroll;
+				overflow-y: scroll;
+				z-index: 1;
+			}
+        </style>
         <script src="js/jquery-2.1.1.min.js"></script>
         <script src="js/jspdf.min.js"></script>
         <script src="js/draw_canvas.js"></script>
+        <script src="js/webfontloader.js"></script>
+
         <script>
-            $(document).ready(function(){
-                generateProblems();
+            WebFont.load({
+                google: {
+                    families: ['Coming Soon', 'Fauna One']
+                },
+                timeout: 2000
             });
+        </script>
+
+        <script>
+            window.onload = function(){
+                setTimeout(function () { writePreview(); }, 100);
+            };
         </script>
     </head>
 
     <body>
         <table>
             <tr>
-                <h1>mathsheets.js</h1>
+                <td>
+                    <h1>mathsheets.js</h1>
+                </td>
             </tr>
             <tr>
                 <td>
                     <table>
                         <tr>
                             <td valign="top">
-                                <div id="controlPanel" style="margin-right: 300px">
+                                <div id="controlPanel" style="">
                                     <p>
                                         Max:
-                                        <select name="selectMax" id="selectMax" onchange="writePage()">
+                                        <select name="selectMax" id="selectMax" onchange="writePreview()">
                                             <option value="10" selected="selected">10</option>
                                             <option value="20">20</option>
                                             <option value="100">100</option>
@@ -39,7 +65,7 @@
                                     </p>
                                     <p>
                                         Mode:<br/>
-                                        <select name="selectMode" id="selectMode" onchange='writePage()'>
+                                        <select name="selectMode" id="selectMode" onchange='writePreview()'>
                                             <option value="default" selected="selected">Default</option>
                                             <option value="doubles">Doubles</option>
                                             <option value="making10s">Making 10's</option>
@@ -53,7 +79,7 @@
                                     </p>
                                     <p>
                                         Rows:
-                                        <select name="selectRows" id="selectRows" onchange="writePage()">
+                                        <select name="selectRows" id="selectRows" onchange="writePreview()">
                                             <option value="1">1</option>
                                             <option value="2">2</option>
                                             <option value="3">3</option>
@@ -63,7 +89,7 @@
                                     </p>
                                     <p>
                                         Columns:
-                                        <select name="selectCols" id="selectCols" onchange="writePage()">
+                                        <select name="selectCols" id="selectCols" onchange="writePreview()">
                                             <option value="1">1</option>
                                             <option value="2">2</option>
                                             <option value="3">3</option>
@@ -72,16 +98,18 @@
                                         </select>
                                     </p>
                                     <p>
-                                        <input value="Refresh" type="button">
-                                        <input value="Print" type="button">
+                                        <input value="Refresh" type="button" onclick="writePreview()">
+                                        <input value="Print" type="button" onclick="printCanvas()">
                                     </p>
                                 </div>
                             </td>
-                            <td>
-                                <div class="container" style="margin-left: -300px; width=500px">
-                                <canvas id='canvas' style="position: absolute; left: 300; top: 55; z-index: 0;">
-                                    HTML5 Canvas not supported by this browser.
-                                </canvas>
+                            <td valign="top">
+                                Preview<br/>
+                                <div class="container" id="preloadfont">
+                                    <canvas id='canvas' width="850" height="1100">
+                                        HTML5 Canvas not supported by this browser.
+                                    </canvas>
+                                </div>
                             </td>
                         </tr>
                     </table>

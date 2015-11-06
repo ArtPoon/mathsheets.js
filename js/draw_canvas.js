@@ -10,16 +10,40 @@ function generateProblems(n) {
     For now let's just do addition.
      */
     var mode = $('#selectMode').val();
-    var max = $('#selectMax').val();
-
+    var max = parseInt($('#selectMax').val());
+    var subtract = $('#checkSubtract')[0].checked;
     var i;
+    var n1;
+
+
     for (i = 0; i < n; i++) {
         problems[i] = {};
-        n1 = getRandomInt(0, max);
-        problems[i]['n1'] = n1;
-        problems[i]['n2'] = getRandomInt(0, max-n1); // make sure sum is below max
+
+        if (mode == 'default') {
+            n1 = getRandomInt(0, max);
+            problems[i]['n1'] = n1;
+            problems[i]['n2'] = getRandomInt(0, max-n1); // make sure sum is below max
+        } else if (mode == 'doubles') {
+            problems[i]['n1'] = problems[i]['n2'] = getRandomInt(1, 1+max/2);
+        } else if (mode == 'making10s') {
+            n1 = getRandomInt(1, max);
+            problems[i]['n1'] = n1;
+            problems[i]['n2'] = getRandomInt(-1, 2) + max-n1;
+        } else {
+        }
+
         problems[i]['op'] = '+';
+        if (subtract) {
+            if (problems[i]['n1'] < problems[i]['n2']) {
+                var temp = problems[i]['n1'];
+                problems[i]['n1'] = problems[i]['n2'];
+                problems[i]['n2'] = temp;
+            }
+            problems[i]['op'] = '-';
+        }
     }
+
+
     return problems;
 }
 

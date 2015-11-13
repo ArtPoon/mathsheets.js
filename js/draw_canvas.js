@@ -4,45 +4,72 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function generateProblems(n) {
+function randomTuple(min, max, do_sort) {
+    /*
+    Return a labelled tuple of integers that sum to a random value
+    from the interval [min, max].  If do_sort is true, then
+    make sure that n1 > n2 (for subtraction with non-negative result).
+     */
+    var sum = getRandomInt(min, max+1);
+    var n1 = getRandomInt(1, sum);
+    var n2 = sum - n1;
+
+    if (do_sort && n1 < n2) {
+        var temp = n1;
+        n1 = n2;
+        n2 = temp;
+    }
+    return {n1: n1, n2: n2};
+}
+
+
+function generateGrid(nrows, ncols) {
     /*
     Returns an array of math problems.
-    For now let's just do addition.
+    Make sure that adjacent problems are always different.
      */
     var mode = $('#selectMode').val();
     var max = parseInt($('#selectMax').val());
-    var subtract = $('#checkSubtract')[0].checked;
-    var i;
-    var n1;
+    var min = 0;
 
-
-    for (i = 0; i < n; i++) {
-        problems[i] = {};
-
-        if (mode == 'default') {
-            n1 = getRandomInt(0, max);
-            problems[i]['n1'] = n1;
-            problems[i]['n2'] = getRandomInt(0, max-n1); // make sure sum is below max
-        } else if (mode == 'doubles') {
-            problems[i]['n1'] = problems[i]['n2'] = getRandomInt(1, 1+max/2);
-        } else if (mode == 'making10s') {
-            n1 = getRandomInt(1, max);
-            problems[i]['n1'] = n1;
-            problems[i]['n2'] = getRandomInt(-1, 2) + max-n1;
-        } else {
-        }
-
-        problems[i]['op'] = '+';
-        if (subtract) {
-            if (problems[i]['n1'] < problems[i]['n2']) {
-                var temp = problems[i]['n1'];
-                problems[i]['n1'] = problems[i]['n2'];
-                problems[i]['n2'] = temp;
-            }
-            problems[i]['op'] = '-';
-        }
+    if (max == 10) {
+        min = 5;
+    } else if (max == 20) {
+        min = 10;
+    } else if (max == 100) {
+        min = 20;
     }
 
+    var subtract = $('#checkSubtract')[0].checked;
+    var i, j;
+    var problems = {};
+
+    for (i = 0; i < nrows; i++) {
+        for (j = 0; j < ncols; j++) {
+            tuple = null;
+            while (tuple == null) {
+                tuple = randomTuple(min, max, subtract);
+                if (j > 0) {
+                    // check if tuple matches to the left
+                    if (problems[[i, j-1]].n1 == tuple.n1 && problems[[i, j-1]].n2 == tuple.n2) {
+                        tuple = null;
+                        continue;
+                    }
+                }
+                if (i > 0) {
+                    // check if tuple matches above
+                    if (problems[[i-1, j]].n1 == tuple.n1 && problems[[i-1, j]].n2 == tuple.n2) {
+                        tuple = null;
+                    }
+                }
+            }
+            problems[[i, j]] = tuple;
+            problems[[i, j]].op = '+';
+            if (subtract) {
+                problems[[i, j]].op = '-';
+            }
+        }
+    }
 
     return problems;
 }
@@ -56,7 +83,7 @@ function writePreview () {
      */
 
     var canvas = $("#canvas")[0];
-    canvas.width = canvas.width;
+    canvas.width = canvas.width;  // clear canvas
     var context = canvas.getContext('2d');
     context.font = "48px 'Coming Soon'";
     context.textAlign = "center";
@@ -69,7 +96,7 @@ function writePreview () {
     //var nProbs = Object.keys(problems).length;
     var nrows = parseInt($('#selectRows').val());
     var ncols = parseInt($('#selectCols').val());
-    var problems = generateProblems(nrows*ncols);
+    var problems = generateGrid(nrows, ncols);
 
     var margin = 0;
     var w = 850 - 2*margin;
@@ -79,10 +106,10 @@ function writePreview () {
 
     for (i = 0; i < nrows; i++) {
         for (j = 0; j < ncols; j++) {
-            index = i*ncols + j;
-            n1 = problems[index]['n1'];
-            n2 = problems[index]['n2'];
-            op = problems[index]['op'];
+            //index = i*ncols + j;
+            n1 = problems[[i,j]]['n1'];
+            n2 = problems[[i,j]]['n2'];
+            op = problems[[i,j]]['op'];
 
             // locate centers
             cx = margin + wb * (j+1);

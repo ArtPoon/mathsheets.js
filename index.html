@@ -23,7 +23,7 @@
         </style>
         <script src="js/jquery-2.1.1.min.js"></script>
         <script src="js/jspdf.min.js"></script>
-        <script src="js/draw_canvas.js"></script>
+        <script src="js/mathsheets.js"></script>
         <script src="js/webfontloader.js"></script>
 
         <script>
@@ -53,29 +53,28 @@
                 <td>
                     <table>
                         <tr>
-                            <td valign="top">
+                            <td valign="top" width="120px">
                                 <div id="controlPanel" style="">
-                                    <p>
-                                        Max:
-                                        <select name="selectMax" id="selectMax" onchange="writePreview()">
-                                            <option value="10" selected="selected">10</option>
-                                            <option value="20">20</option>
-                                            <option value="100">100</option>
-                                        </select>
-                                    </p>
                                     <p>
                                         Mode:<br/>
                                         <select name="selectMode" id="selectMode" onchange='writePreview()'>
-                                            <option value="default" selected="selected">Default</option>
-                                            <option value="doubles">Doubles</option>
+                                            <option value="twenty" selected="selected">Random sums from 10 to 20</option>
                                             <option value="making10s">Making 10's</option>
-                                            <option value="1more1less">One more, one less</option>
-                                            <option value="2more2less">Two more, two less</option>
+                                            <option value="doubles">Doubles</option>
                                         </select>
                                     </p>
 
                                     <p>
-                                        Subtraction: <input name="checkSubtract" id="checkSubtract" type="checkbox" onclick="writePreview()">
+                                        <div id="explainDiv"></div>
+                                    </p>
+
+                                    <p>
+                                        Subtraction:<br/>
+                                        <select name="subtractMode" id="subtractMode" onchange="writePreview()">
+                                            <option value="on">On</option>
+                                            <option value="off" selected="selected">Off</option>
+                                            <option value="both">Both</option>
+                                        </select>
                                     </p>
                                     <p>
                                         Rows:
@@ -104,7 +103,7 @@
                                 </div>
                             </td>
                             <td valign="top">
-                                Preview<br/>
+                                Preview (scroll within panel)<br/>
                                 <div class="container" id="preloadfont">
                                     <canvas id='canvas' width="850" height="1100">
                                         HTML5 Canvas not supported by this browser.

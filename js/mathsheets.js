@@ -1,7 +1,10 @@
 var problems = {};
 
 function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
+    /*
+    Returns a random integer in range [min, max]
+     */
+    return Math.floor(Math.random() * (max+1 - min)) + min;
 }
 
 function randomTuple(min, max, do_sort) {
@@ -10,8 +13,8 @@ function randomTuple(min, max, do_sort) {
     from the interval [min, max].  If do_sort is true, then
     make sure that n1 > n2 (for subtraction with non-negative result).
      */
-    var sum = getRandomInt(min, max+1);
-    var n1 = getRandomInt(1, sum);
+    var sum = getRandomInt(min, max);
+    var n1 = getRandomInt(1, sum-1);
     var n2 = sum - n1;
 
     if (do_sort && n1 < n2) {
@@ -29,26 +32,56 @@ function generateGrid(nrows, ncols) {
     Make sure that adjacent problems are always different.
      */
     var mode = $('#selectMode').val();
-    var max = parseInt($('#selectMax').val());
-    var min = 0;
 
-    if (max == 10) {
-        min = 5;
-    } else if (max == 20) {
-        min = 10;
-    } else if (max == 100) {
-        min = 20;
+    var subtractor = $('#subtractMode')[0];
+    var mode2 = subtractor.value;
+    if (mode == 'twenty') {
+        subtractor.disabled = false;
+    }
+    else {
+        subtractor.disabled = true;
+        subtractor.value = 'off';
+        mode2 = 'off';
     }
 
-    var subtract = $('#checkSubtract')[0].checked;
     var i, j;
+    var subtract;
+    var tuple;
     var problems = {};
 
     for (i = 0; i < nrows; i++) {
         for (j = 0; j < ncols; j++) {
             tuple = null;
+
+            // determine if add or subtract
+            if (mode2 == 'on') {
+                subtract = true;
+            } else if (mode2 == 'off') {
+                subtract = false;
+            } else {
+                subtract = (getRandomInt(0,1) > 0);
+            }
+
             while (tuple == null) {
-                tuple = randomTuple(min, max, subtract);
+                if (mode == 'twenty') {
+                    tuple = randomTuple(10, 20, subtract);
+                }
+                else {
+                    tuple = {n1: 0, n2: 0};
+                    if (mode == 'making10s') {
+                        tuple.n1 = getRandomInt(2, 8);
+                        tuple.n2 = 10 - tuple.n1;
+                        tuple.n1 += getRandomInt(-1, 1);
+                    }
+                    else if (mode == 'doubles') {
+                        tuple.n1 = getRandomInt(2, 10);
+                        tuple.n2 = tuple.n1 + getRandomInt(-1, 1);
+                    }
+                    else {
+                        alert('ERROR: Unexpected mode in mathsheets.js:generateGrid()', mode)
+                    }
+                }
+
                 if (j > 0) {
                     // check if tuple matches to the left
                     if (problems[[i, j-1]].n1 == tuple.n1 && problems[[i, j-1]].n2 == tuple.n2) {
@@ -70,8 +103,23 @@ function generateGrid(nrows, ncols) {
             }
         }
     }
+    setExplanation(mode);
 
     return problems;
+}
+
+function setExplanation(mode) {
+    if (mode == 'twenty') {
+        $('#explainDiv').text('Drilling. Random sums from 10 to 20.');
+    } else if (mode == 'making10s') {
+        $('#explainDiv').text('Conceptual exercise. Memorizing the ways to make 10, and learning how this makes ' +
+            'other sums easier.');
+    } else if (mode == 'doubles') {
+        $('#explainDiv').text('Conceptual exercise. Memorizing sums of doubles, and learning how this makes ' +
+            'sums of "near doubles" easier.');
+    } else {
+        alert('Error, unexpected mode in setExplanation()', mode);
+    }
 }
 
 
@@ -85,10 +133,23 @@ function writePreview () {
     var canvas = $("#canvas")[0];
     canvas.width = canvas.width;  // clear canvas
     var context = canvas.getContext('2d');
-    context.font = "48px 'Coming Soon'";
+    context.font = "24px 'Coming Soon'";
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.lineWidth = 2;
+
+    // write header
+    context.fillText('mathsheets.js', 100, 40);
+    var mode = $('#selectMode').val();
+    if (mode == 'twenty') {
+        context.fillText('Random sums!', 700, 40);
+    } else if (mode == 'making10s') {
+        context.fillText('Making tens!', 700, 40);
+    } else if (mode == 'doubles') {
+        context.fillText('Doubles!', 700, 40);
+    }
+
+    context.font = "48px 'Coming Soon'";
 
     var i, j; // counters
     var index;
@@ -128,6 +189,7 @@ function writePreview () {
 }
 
 function printCanvas() {
-    var img    = canvas.toDataURL("image/png");
-    document.write('<img src="'+img+'"/>');
+    var img = canvas.toDataURL("image/png");
+    var w = window.open('');
+    w.document.write('<img src="'+img+'"/>');
 }
